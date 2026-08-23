@@ -7,136 +7,180 @@
 <title>Luis bot — Discord bot</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
 <style>
+  :root {
+    --bg: #0b0b0f;
+    --bg2: #0f0f15;
+    --panel: #14141d;
+    --panel2: #1a1a25;
+    --border: #232331;
+    --text: #e8e8f0;
+    --muted: #9a9aa8;
+    --accent: #6d5cff;
+    --accent2: #8b7cff;
+    --green: #4ade80;
+    --red: #f87171;
+  }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: smooth; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background: #fafafa;
-    color: #18181b;
+    background: var(--bg);
+    color: var(--text);
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
+    background-image: radial-gradient(800px 400px at 80% -10%, rgba(109, 92, 255, 0.12), transparent 60%);
   }
-  a { color: #4f46e5; text-decoration: none; }
+  ::selection { background: var(--accent); color: #fff; }
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 8px; }
+  a { color: var(--accent2); text-decoration: none; }
   a:hover { text-decoration: underline; }
 
   nav {
     position: sticky; top: 0; z-index: 50;
     display: flex; align-items: center; justify-content: space-between;
     padding: 14px 24px;
-    background: rgba(255, 255, 255, 0.9);
-    border-bottom: 1px solid #e4e4e7;
-    backdrop-filter: blur(8px);
+    background: rgba(11, 11, 15, 0.85);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(10px);
   }
-  nav .logo { font-size: 18px; font-weight: 700; color: #18181b; }
-  nav .logo span { color: #4f46e5; }
-  nav .links { display: flex; gap: 24px; align-items: center; font-size: 14px; color: #71717a; }
-  nav .links a:hover { color: #18181b; }
+  nav .logo { font-size: 18px; font-weight: 700; color: var(--text); }
+  nav .logo span { color: var(--accent2); }
+  nav .links { display: flex; gap: 24px; align-items: center; font-size: 14px; color: var(--muted); }
+  nav .links a:hover { color: var(--text); text-decoration: none; }
   nav .invite {
-    background: #4f46e5; color: #fff !important; font-weight: 600;
-    padding: 8px 18px; border-radius: 8px; text-decoration: none;
-    transition: background .15s;
+    background: var(--accent); color: #fff !important; font-weight: 600;
+    padding: 8px 18px; border-radius: 8px; transition: background .15s;
   }
-  nav .invite:hover { background: #4338ca; }
+  nav .invite:hover { background: var(--accent2); }
   @media (max-width: 640px) { nav .links a:not(.invite) { display: none; } }
 
   .container { max-width: 1000px; margin-inline: auto; padding: 0 24px; }
 
-  header { padding: 96px 0 56px; text-align: center; }
+  header { padding: 104px 0 64px; text-align: center; }
   .status-pill {
     display: inline-flex; align-items: center; gap: 8px;
-    background: #fff; border: 1px solid #e4e4e7;
-    padding: 6px 14px; border-radius: 999px; font-size: 13px; color: #71717a;
-    margin-bottom: 24px;
+    background: var(--panel); border: 1px solid var(--border);
+    padding: 6px 14px; border-radius: 999px; font-size: 13px; color: var(--muted);
+    margin-bottom: 26px;
   }
-  .dot { width: 8px; height: 8px; border-radius: 50%; background: #a1a1aa; }
-  .dot.online { background: #22c55e; }
-  .dot.offline { background: #ef4444; }
-  header h1 { font-size: clamp(40px, 8vw, 64px); font-weight: 800; letter-spacing: -1px; color: #18181b; }
-  header h1 span { color: #4f46e5; }
-  header .tagline { color: #71717a; font-size: 18px; margin-top: 16px; }
-  .cta { margin-top: 32px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #52525f; }
+  .dot.online { background: var(--green); box-shadow: 0 0 10px var(--green); }
+  .dot.offline { background: var(--red); }
+  header h1 { font-size: clamp(42px, 8vw, 68px); font-weight: 800; letter-spacing: -1.5px; line-height: 1.05; }
+  header h1 span { color: var(--accent2); }
+  header .tagline { color: var(--muted); font-size: 18px; margin-top: 16px; }
+  .cta { margin-top: 34px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
   .btn {
-    padding: 12px 24px; border-radius: 8px; font-size: 15px; font-weight: 600;
+    padding: 13px 26px; border-radius: 8px; font-size: 15px; font-weight: 600;
     border: none; cursor: pointer; text-decoration: none; display: inline-block;
+    transition: transform .1s, background .15s;
   }
-  .btn-primary { background: #4f46e5; color: #fff; }
-  .btn-primary:hover { background: #4338ca; text-decoration: none; }
-  .btn-ghost { background: #fff; color: #18181b; border: 1px solid #e4e4e7; }
-  .btn-ghost:hover { background: #f4f4f5; text-decoration: none; }
+  .btn:hover { transform: translateY(-1px); }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent2); text-decoration: none; }
+  .btn-ghost { background: var(--panel); color: var(--text); border: 1px solid var(--border); }
+  .btn-ghost:hover { background: var(--panel2); text-decoration: none; }
 
-  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 16px; margin-top: 48px; }
-  .stat { background: #fff; border: 1px solid #e4e4e7; border-radius: 12px; padding: 20px; }
-  .stat .n { font-size: 28px; font-weight: 700; color: #18181b; }
-  .stat .l { font-size: 13px; color: #71717a; margin-top: 4px; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 16px; margin-top: 52px; }
+  .stat { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 22px; }
+  .stat .n { font-size: 30px; font-weight: 700; color: var(--accent2); }
+  .stat .l { font-size: 13px; color: var(--muted); margin-top: 4px; }
 
-  section { padding: 56px 0; }
-  section h2 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; color: #18181b; }
-  .sub { color: #71717a; margin-top: 8px; margin-bottom: 24px; font-size: 15px; }
+  section { padding: 60px 0; }
+  section h2 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+  .sub { color: var(--muted); margin-top: 8px; margin-bottom: 28px; font-size: 15px; }
+
+  .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+  .feature {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
+    padding: 24px; transition: border-color .15s, transform .15s;
+  }
+  .feature:hover { border-color: var(--accent); transform: translateY(-3px); }
+  .feature .icon { font-size: 28px; margin-bottom: 14px; }
+  .feature b { display: block; margin-bottom: 8px; font-size: 16px; }
+  .feature p { color: var(--muted); font-size: 14px; line-height: 1.6; }
 
   .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; align-items: center; }
   .search {
     flex: 1; min-width: 200px;
-    background: #fff; border: 1px solid #e4e4e7; border-radius: 8px;
-    padding: 11px 14px; font-size: 14px; outline: none; font-family: inherit;
+    background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+    padding: 11px 14px; font-size: 14px; color: var(--text); outline: none; font-family: inherit;
   }
-  .search:focus { border-color: #4f46e5; }
+  .search:focus { border-color: var(--accent); }
   .chip {
-    background: #fff; border: 1px solid #e4e4e7; color: #52525b;
+    background: var(--panel); border: 1px solid var(--border); color: var(--muted);
     border-radius: 999px; padding: 9px 16px; font-size: 13px; cursor: pointer;
     transition: all .12s; font-family: inherit;
   }
-  .chip:hover { border-color: #4f46e5; color: #4f46e5; }
-  .chip.active { background: #4f46e5; color: #fff; border-color: #4f46e5; }
+  .chip:hover { border-color: var(--accent); color: var(--text); }
+  .chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
-  .group-title { grid-column: 1 / -1; margin: 12px 0 4px; color: #71717a; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+  .group-title { grid-column: 1 / -1; margin: 12px 0 4px; color: var(--muted); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
   .cmd {
-    background: #fff; border: 1px solid #e4e4e7; border-radius: 10px;
+    background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
     padding: 14px 16px; cursor: pointer; transition: border-color .15s, box-shadow .15s;
   }
-  .cmd:hover { border-color: #4f46e5; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.08); }
-  .cmd code { color: #4f46e5; font-weight: 600; font-size: 14px; }
-  .cmd p { color: #71717a; font-size: 13px; margin-top: 4px; }
-  .cmd .copied { float: right; font-size: 11px; color: #22c55e; opacity: 0; transition: opacity .2s; }
+  .cmd:hover { border-color: var(--accent); box-shadow: 0 4px 16px rgba(109, 92, 255, 0.15); }
+  .cmd code { color: var(--accent2); font-weight: 600; font-size: 14px; }
+  .cmd p { color: var(--muted); font-size: 13px; margin-top: 4px; }
+  .cmd .copied { float: right; font-size: 11px; color: var(--green); opacity: 0; transition: opacity .2s; }
   .cmd.copied-now .copied { opacity: 1; }
 
   .split { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
   @media (max-width: 800px) { .split { grid-template-columns: 1fr; } }
 
-  .chat { background: #fff; border: 1px solid #e4e4e7; border-radius: 14px; overflow: hidden; }
-  .chat-head { padding: 14px 18px; border-bottom: 1px solid #e4e4e7; display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 14px; }
-  .chat-head .bot-avatar { width: 32px; height: 32px; border-radius: 50%; background: #4f46e5; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 16px; }
-  .chat-head .idle { margin-left: auto; font-size: 12px; color: #a1a1aa; font-weight: 400; }
+  .chat { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .chat-head { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 14px; }
+  .chat-head .bot-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .chat-head .idle { margin-left: auto; font-size: 12px; color: var(--muted); font-weight: 400; }
   .chat-body { padding: 16px 18px; height: 340px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
   .msg { max-width: 85%; padding: 10px 14px; border-radius: 12px; font-size: 14px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
-  .msg.user { align-self: flex-end; background: #4f46e5; color: #fff; border-bottom-right-radius: 4px; }
-  .msg.bot { align-self: flex-start; background: #f4f4f5; border-bottom-left-radius: 4px; }
+  .msg.user { align-self: flex-end; background: var(--accent); color: #fff; border-bottom-right-radius: 4px; }
+  .msg.bot { align-self: flex-start; background: var(--panel2); border-bottom-left-radius: 4px; }
   .typing { display: inline-flex; gap: 4px; align-items: center; padding: 12px; }
-  .typing i { width: 7px; height: 7px; border-radius: 50%; background: #a1a1aa; animation: bounce 1.2s infinite; }
+  .typing i { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); animation: bounce 1.2s infinite; }
   .typing i:nth-child(2) { animation-delay: .15s; }
   .typing i:nth-child(3) { animation-delay: .3s; }
   @keyframes bounce { 0%,100% { transform: translateY(0); opacity: .4; } 50% { transform: translateY(-4px); opacity: 1; } }
-  .chat-foot { border-top: 1px solid #e4e4e7; display: flex; }
-  .chat-foot input { flex: 1; border: none; outline: none; padding: 14px 18px; font-size: 14px; font-family: inherit; }
-  .chat-foot button { border: none; background: #4f46e5; color: #fff; padding: 0 24px; font-weight: 600; font-family: inherit; font-size: 14px; cursor: pointer; }
-  .chat-foot button:hover { background: #4338ca; }
+  .chat-foot { border-top: 1px solid var(--border); display: flex; }
+  .chat-foot input { flex: 1; border: none; outline: none; background: transparent; color: var(--text); padding: 14px 18px; font-size: 14px; font-family: inherit; }
+  .chat-foot button { border: none; background: var(--accent); color: #fff; padding: 0 24px; font-weight: 600; font-family: inherit; font-size: 14px; cursor: pointer; transition: background .15s; }
+  .chat-foot button:hover { background: var(--accent2); }
   .suggest { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
   .suggest .chip { font-size: 12px; padding: 7px 12px; }
 
-  .faq { display: flex; flex-direction: column; gap: 12px; }
-  .faq-item { background: #fff; border: 1px solid #e4e4e7; border-radius: 10px; padding: 18px 20px; }
-  .faq-item b { display: block; margin-bottom: 6px; font-size: 14px; }
-  .faq-item p { color: #71717a; font-size: 14px; line-height: 1.6; }
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; counter-reset: step; }
+  .step { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 24px; position: relative; }
+  .step .num {
+    width: 34px; height: 34px; border-radius: 50%; background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-weight: 700; margin-bottom: 14px;
+  }
+  .step b { display: block; margin-bottom: 8px; font-size: 16px; }
+  .step p { color: var(--muted); font-size: 14px; line-height: 1.6; }
 
-  footer { text-align: center; padding: 40px 20px; color: #a1a1aa; font-size: 13px; border-top: 1px solid #e4e4e7; }
+  .faq { display: flex; flex-direction: column; gap: 12px; }
+  .faq-item { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
+  .faq-item b { display: block; margin-bottom: 6px; font-size: 14px; }
+  .faq-item p { color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+  footer { border-top: 1px solid var(--border); padding: 48px 0 40px; margin-top: 40px; }
+  footer .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 24px; }
+  footer .col b { display: block; margin-bottom: 12px; font-size: 14px; }
+  footer .col a { display: block; color: var(--muted); font-size: 13px; padding: 3px 0; }
+  footer .col a:hover { color: var(--text); }
+  footer .bottom { text-align: center; margin-top: 32px; color: var(--muted); font-size: 13px; }
+
   #toTop {
     position: fixed; bottom: 24px; right: 24px; z-index: 40;
     width: 44px; height: 44px; border-radius: 8px;
-    background: #18181b; color: #fff; border: none; cursor: pointer; font-size: 16px;
+    background: var(--panel2); color: var(--text); border: 1px solid var(--border); cursor: pointer; font-size: 16px;
     display: none; align-items: center; justify-content: center;
   }
   #toTop.show { display: flex; }
-  #toTop:hover { background: #4f46e5; }
+  #toTop:hover { border-color: var(--accent); color: var(--accent2); }
 </style>
 </head>
 <body>
@@ -144,8 +188,10 @@
 <nav>
   <div class="logo">Luis<span>bot</span></div>
   <div class="links">
+    <a href="#features">Features</a>
     <a href="#commands">Commands</a>
     <a href="#chat">Try it</a>
+    <a href="#setup">Setup</a>
     <a href="#faq">FAQ</a>
     <a class="invite" href="https://da.gd/AOTuKX" target="_blank" rel="noopener">Add to Discord</a>
   </div>
@@ -158,7 +204,7 @@
     <p class="tagline">A Discord bot with 60 commands — fun, AI chat, utilities, and moderation.</p>
     <div class="cta">
       <a class="btn btn-primary" href="https://da.gd/AOTuKX" target="_blank" rel="noopener">Add to Discord</a>
-      <a class="btn btn-ghost" href="#commands">Browse commands</a>
+      <a class="btn btn-ghost" href="#features">Explore features</a>
     </div>
     <div class="stats">
       <div class="stat"><div class="n" id="statCmds">60</div><div class="l">Commands</div></div>
@@ -168,6 +214,35 @@
     </div>
   </div>
 </header>
+
+<section id="features">
+  <div class="container">
+    <h2>What it can do</h2>
+    <p class="sub">Everything you need in one bot.</p>
+    <div class="features">
+      <div class="feature">
+        <div class="icon">🧠</div>
+        <b>AI chat</b>
+        <p>Talk to the bot in a dedicated channel or with /ask. Powered by DeepSeek V4 Flash, with conversation memory.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">🛠️</div>
+        <b>60+ commands</b>
+        <p>Weather, crypto, memes, trivia, QR codes, polls, timers, definitions, and much more.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">🛡️</div>
+        <b>Full moderation</b>
+        <p>Kick, ban, timeout, purge messages, slowmode, lock channels, manage nicknames and roles.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">⚡</div>
+        <b>Fast &amp; reliable</b>
+        <p>Built on discord.js v14 with nanosecond ping tracking. Commands register instantly on every server.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
 <section id="commands">
   <div class="container">
@@ -214,6 +289,30 @@
   </div>
 </section>
 
+<section id="setup">
+  <div class="container">
+    <h2>Add it in 3 steps</h2>
+    <p class="sub">Takes less than a minute.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="num">1</div>
+        <b>Open the invite link</b>
+        <p>Click "Add to Discord" and pick the server you want the bot in.</p>
+      </div>
+      <div class="step">
+        <div class="num">2</div>
+        <b>Authorize</b>
+        <p>Review the permissions (Administrator) and confirm the invite.</p>
+      </div>
+      <div class="step">
+        <div class="num">3</div>
+        <b>Start using it</b>
+        <p>All 60 commands are registered instantly. Type / in any channel.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section id="faq">
   <div class="container">
     <div class="split">
@@ -231,7 +330,31 @@
   </div>
 </section>
 
-<footer>Luis bot — built with discord.js · <a href="https://da.gd/AOTuKX" target="_blank" rel="noopener">invite the bot</a></footer>
+<footer>
+  <div class="container">
+    <div class="cols">
+      <div class="col">
+        <b>Luis bot</b>
+        <a href="#features">Features</a>
+        <a href="#commands">Commands</a>
+        <a href="#chat">Live demo</a>
+      </div>
+      <div class="col">
+        <b>Resources</b>
+        <a href="https://da.gd/AOTuKX" target="_blank" rel="noopener">Invite the bot</a>
+        <a href="#setup">Setup guide</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <div class="col">
+        <b>Tech</b>
+        <a href="#">discord.js v14</a>
+        <a href="#">DeepSeek V4 Flash</a>
+        <a href="#">Node.js 22</a>
+      </div>
+    </div>
+    <div class="bottom">Luis bot — built with discord.js · no brain cells were harmed</div>
+  </div>
+</footer>
 
 <button id="toTop" title="Back to top">↑</button>
 
@@ -309,7 +432,7 @@ function render() {
   if (!grid.children.length) {
     const empty = document.createElement('div');
     empty.style.gridColumn = '1 / -1';
-    empty.style.cssText = 'color:#71717a;padding:50px;text-align:center';
+    empty.style.cssText = 'color:var(--muted);padding:50px;text-align:center';
     empty.textContent = 'No commands match your search.';
     grid.appendChild(empty);
   }
