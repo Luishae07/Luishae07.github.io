@@ -4,262 +4,241 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Luis bot — the spectacularly dumb Discord bot. Confidently wrong about everything, and adorable about it.">
-<title>Luis bot — the dumbest bot on Discord</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
+<title>LUIS_BOT.EXE — the dumbest bot on Discord</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🖥️</text></svg>">
 <style>
   :root {
-    --bg: #08080f;
-    --bg2: #0e0e1a;
-    --card: rgba(255, 255, 255, 0.035);
-    --card-hover: rgba(255, 255, 255, 0.06);
-    --border: rgba(255, 255, 255, 0.08);
-    --text: #f2f2fa;
-    --muted: #9a9ab5;
-    --accent: #7c5cff;
-    --accent2: #ff5c8a;
-    --cyan: #22d3ee;
-    --green: #4ade80;
-    --red: #f87171;
-    --radius: 16px;
+    --bg: #0a0f0a;
+    --bg2: #050805;
+    --panel: #0d140d;
+    --green: #33ff66;
+    --green-dim: #1aa34a;
+    --amber: #ffb000;
+    --red: #ff4444;
+    --cyan: #33ffff;
+    --text: #c8ffd0;
+    --muted: #4a7a5a;
+    --border: #1d3322;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: smooth; }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: ui-monospace, "SF Mono", "Cascadia Mono", "JetBrains Mono", Consolas, "Courier New", monospace;
     background:
-      radial-gradient(1200px 600px at 80% -10%, rgba(124, 92, 255, 0.12), transparent 60%),
-      radial-gradient(900px 500px at -10% 20%, rgba(255, 92, 138, 0.08), transparent 55%),
-      linear-gradient(180deg, var(--bg), var(--bg2));
+      linear-gradient(rgba(51, 255, 102, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(51, 255, 102, 0.035) 1px, transparent 1px),
+      radial-gradient(900px 500px at 70% -10%, rgba(51,255,102,0.08), transparent 60%),
+      var(--bg);
+    background-size: 40px 40px, 40px 40px, 100% 100%, 100% 100%;
     color: var(--text);
     min-height: 100vh;
     overflow-x: hidden;
-    -webkit-font-smoothing: antialiased;
   }
-  ::selection { background: var(--accent); color: white; }
+  body::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 60;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,0.18) 0 1px, transparent 1px 3px);
+    mix-blend-mode: multiply;
+  }
+  ::selection { background: var(--green); color: #000; }
   ::-webkit-scrollbar { width: 10px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: #2a2a45; border-radius: 8px; }
-  ::-webkit-scrollbar-thumb:hover { background: #3a3a5f; }
-  a { color: var(--accent); text-decoration: none; }
-
-  .orb { position: fixed; border-radius: 50%; filter: blur(130px); opacity: 0.3; z-index: -1; pointer-events: none; }
-  .orb-1 { width: 480px; height: 480px; background: var(--accent); top: -160px; left: -120px; }
-  .orb-2 { width: 420px; height: 420px; background: var(--accent2); top: 25%; right: -160px; opacity: 0.18; }
-  .orb-3 { width: 380px; height: 380px; background: var(--cyan); bottom: -140px; left: 28%; opacity: 0.14; }
+  ::-webkit-scrollbar-thumb { background: var(--border); }
+  a { color: var(--cyan); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code { font-family: inherit; }
 
   nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 50;
     display: flex; align-items: center; justify-content: space-between;
-    padding: 16px 28px;
-    background: rgba(8, 8, 15, 0.65);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border-bottom: 1px solid transparent;
-    transition: border-color .3s, background .3s;
+    padding: 14px 22px;
+    background: rgba(5, 8, 5, 0.9);
+    border-bottom: 1px solid var(--border);
   }
-  nav.scrolled { border-color: var(--border); background: rgba(8, 8, 15, 0.85); }
-  nav .logo { font-weight: 800; font-size: 19px; letter-spacing: -0.5px; }
-  nav .logo span { background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  nav .links { display: flex; gap: 24px; align-items: center; font-size: 14px; color: var(--muted); }
-  nav .links a { transition: color .15s; }
-  nav .links a:hover { color: var(--text); }
+  nav .logo { color: var(--green); font-weight: 700; letter-spacing: 1px; }
+  nav .logo .cursor { display: inline-block; width: 9px; height: 16px; background: var(--green); vertical-align: -2px; animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  nav .links { display: flex; gap: 22px; align-items: center; font-size: 14px; color: var(--muted); }
+  nav .links a:hover { color: var(--green); }
   nav .invite {
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    color: white; font-weight: 600; padding: 9px 18px; border-radius: 999px; font-size: 14px;
-    box-shadow: 0 4px 20px rgba(124, 92, 255, 0.35);
-    transition: transform .15s, box-shadow .2s;
+    color: var(--bg) !important; background: var(--green);
+    padding: 8px 16px; font-weight: 700; text-decoration: none;
+    box-shadow: 3px 3px 0 var(--green-dim);
+    transition: transform .1s, box-shadow .1s;
   }
-  nav .invite:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124, 92, 255, 0.5); }
+  nav .invite:hover { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--green-dim); }
   @media (max-width: 640px) { nav .links a:not(.invite) { display: none; } }
 
   header { padding: 150px 24px 60px; text-align: center; max-width: 780px; margin-inline: auto; }
   .status-pill {
-    display: inline-flex; align-items: center; gap: 9px;
-    background: var(--card); border: 1px solid var(--border);
-    padding: 8px 18px; border-radius: 999px; font-size: 13px; color: var(--muted);
-    margin-bottom: 28px; backdrop-filter: blur(8px);
+    display: inline-flex; align-items: center; gap: 10px;
+    border: 1px solid var(--border); background: var(--panel);
+    padding: 8px 16px; font-size: 13px; color: var(--muted);
+    margin-bottom: 30px;
   }
-  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
-  .dot.online { background: var(--green); box-shadow: 0 0 12px var(--green); animation: pulse 2s infinite; }
+  .status-pill::before { content: '$'; color: var(--green); }
+  .dot { width: 10px; height: 10px; border-radius: 0; background: var(--muted); }
+  .dot.online { background: var(--green); animation: pulse 1.4s infinite; }
   .dot.offline { background: var(--red); }
-  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
 
-  header h1 { font-size: clamp(48px, 11vw, 92px); letter-spacing: -3px; line-height: 0.95; font-weight: 900; }
-  .grad {
-    background: linear-gradient(90deg, var(--accent), var(--accent2), var(--cyan));
-    background-size: 220% auto;
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-    animation: shine 5s linear infinite;
+  header h1 {
+    font-size: clamp(40px, 10vw, 84px); letter-spacing: 2px;
+    color: var(--green); font-weight: 700; line-height: 1.05;
+    text-shadow: 0 0 18px rgba(51,255,102,0.45);
   }
-  @keyframes shine { to { background-position: 220% center; } }
-  header .tagline { color: var(--muted); font-size: 18px; margin-top: 20px; line-height: 1.5; }
-  .cta { margin-top: 36px; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  header h1 .line { color: var(--amber); }
+  header .tagline { color: var(--text); margin-top: 20px; font-size: 16px; line-height: 1.6; }
+  header .tagline .dim { color: var(--muted); }
+  .cta { margin-top: 36px; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
   .btn {
-    padding: 15px 32px; border-radius: 14px; font-weight: 700; font-size: 15px;
-    border: none; cursor: pointer; transition: transform .15s, box-shadow .2s;
+    padding: 14px 28px; font-family: inherit; font-size: 15px; font-weight: 700;
+    border: none; cursor: pointer; text-decoration: none; display: inline-block;
   }
-  .btn:hover { transform: translateY(-3px); }
-  .btn-primary {
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    color: white; box-shadow: 0 10px 35px rgba(124, 92, 255, 0.4);
-  }
-  .btn-primary:hover { box-shadow: 0 16px 45px rgba(124, 92, 255, 0.55); }
-  .btn-ghost { background: var(--card); border: 1px solid var(--border); color: var(--text); }
+  .btn-primary { background: var(--green); color: var(--bg); box-shadow: 4px 4px 0 var(--green-dim); transition: transform .1s, box-shadow .1s; }
+  .btn-primary:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--green-dim); }
+  .btn-ghost { background: transparent; color: var(--green); border: 1px solid var(--border); box-shadow: 4px 4px 0 var(--border); transition: transform .1s, box-shadow .1s; }
+  .btn-ghost:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--border); }
 
-  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 14px; margin-top: 48px; }
-  .stat {
-    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
-    padding: 20px; backdrop-filter: blur(10px); transition: transform .2s, border-color .2s;
-  }
-  .stat:hover { transform: translateY(-4px); border-color: var(--accent); }
-  .stat .n {
-    font-size: 32px; font-weight: 800;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-  }
-  .stat .l { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-top: 48px; text-align: left; }
+  .stat { border: 1px solid var(--border); background: var(--panel); padding: 16px; }
+  .stat .n { font-size: 30px; font-weight: 700; color: var(--green); }
+  .stat .l { font-size: 12px; color: var(--muted); margin-top: 6px; letter-spacing: 1px; }
 
   section { max-width: 1080px; margin-inline: auto; padding: 76px 24px; }
-  section h2 { font-size: 36px; letter-spacing: -1.5px; font-weight: 800; }
-  .sub { color: var(--muted); margin-top: 8px; margin-bottom: 32px; font-size: 16px; }
+  section h2 { font-size: 26px; letter-spacing: 1px; color: var(--green); font-weight: 700; }
+  section h2::before { content: '> '; color: var(--amber); }
+  .sub { color: var(--muted); margin-top: 8px; margin-bottom: 32px; font-size: 14px; }
 
-  .toolbar { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 26px; align-items: center; }
+  .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 26px; align-items: center; }
   .search {
     flex: 1; min-width: 200px;
-    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
-    padding: 12px 16px; color: var(--text); font-size: 15px; outline: none;
-    transition: border-color .2s;
+    background: var(--bg2); border: 1px solid var(--border); padding: 12px 14px;
+    color: var(--green); font-size: 14px; font-family: inherit; outline: none;
   }
-  .search:focus { border-color: var(--accent); }
+  .search:focus { border-color: var(--green); box-shadow: 0 0 12px rgba(51,255,102,0.2); }
   .chip {
-    background: var(--card); border: 1px solid var(--border); color: var(--muted);
-    border-radius: 999px; padding: 10px 17px; font-size: 13px; cursor: pointer;
-    transition: all .15s; font-family: inherit;
+    background: var(--bg2); border: 1px solid var(--border); color: var(--muted);
+    padding: 10px 16px; font-size: 13px; font-family: inherit; cursor: pointer;
+    transition: all .12s;
   }
-  .chip.active, .chip:hover { background: var(--accent); color: white; border-color: var(--accent); }
+  .chip.active, .chip:hover { background: var(--green); color: var(--bg); border-color: var(--green); font-weight: 700; }
 
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
   .group-title {
     grid-column: 1 / -1; margin: 12px 0 6px;
-    color: var(--muted); font-size: 12px; text-transform: uppercase;
-    letter-spacing: 2px; font-weight: 800;
+    color: var(--amber); font-size: 12px; letter-spacing: 2px;
   }
+  .group-title::before { content: '## '; }
   .cmd {
-    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
-    padding: 15px 17px; cursor: pointer; position: relative; overflow: hidden;
-    transition: transform .15s, border-color .15s, background .2s, box-shadow .25s;
+    border: 1px solid var(--border); background: var(--panel);
+    padding: 14px 16px; cursor: pointer; position: relative;
+    transition: transform .12s, border-color .12s, background .12s;
   }
-  .cmd::before {
-    content: ''; position: absolute; inset: 0;
-    background: radial-gradient(300px 80px at var(--mx, 50%) 0%, rgba(124,92,255,0.15), transparent 70%);
-    opacity: 0; transition: opacity .2s;
-  }
-  .cmd:hover { transform: translateY(-3px); border-color: var(--accent); box-shadow: 0 12px 35px rgba(124, 92, 255, 0.18); }
-  .cmd:hover::before { opacity: 1; }
-  .cmd code { color: var(--accent); font-weight: 800; font-size: 15px; position: relative; }
-  .cmd p { color: var(--muted); font-size: 13px; margin-top: 5px; position: relative; }
-  .cmd .copied { position: absolute; top: 10px; right: 13px; font-size: 11px; color: var(--green); opacity: 0; transition: opacity .2s; }
+  .cmd:hover { transform: translate(-2px, -2px); border-color: var(--green); box-shadow: 3px 3px 0 rgba(51,255,102,0.25); }
+  .cmd code { color: var(--green); font-weight: 700; font-size: 14px; }
+  .cmd code::before { content: '$ '; color: var(--muted); }
+  .cmd p { color: var(--muted); font-size: 12px; margin-top: 5px; }
+  .cmd .copied { position: absolute; top: 10px; right: 12px; font-size: 11px; color: var(--amber); opacity: 0; transition: opacity .2s; }
   .cmd.copied-now .copied { opacity: 1; }
 
   .split { display: grid; grid-template-columns: 1fr 1fr; gap: 44px; align-items: start; }
   @media (max-width: 800px) { .split { grid-template-columns: 1fr; } }
 
   .chat {
-    background: var(--card); border: 1px solid var(--border); border-radius: 20px; overflow: hidden;
-    backdrop-filter: blur(12px); box-shadow: 0 24px 70px rgba(0,0,0,0.45);
+    border: 1px solid var(--border); background: var(--bg2);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
   }
-  .chat-head { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 11px; font-weight: 700; }
+  .chat-head { padding: 13px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--green); font-size: 14px; }
+  .chat-head::before { content: '▮'; color: var(--red); }
   .chat-head .bot-avatar {
-    width: 32px; height: 32px; border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    display: flex; align-items: center; justify-content: center; font-size: 16px;
-    flex-shrink: 0;
+    width: 30px; height: 30px; background: var(--green); color: var(--bg);
+    display: flex; align-items: center; justify-content: center; font-size: 15px;
   }
   .chat-head .idle { margin-left: auto; font-size: 12px; color: var(--muted); font-weight: 400; }
-  .chat-body {
-    padding: 18px 20px; height: 340px; overflow-y: auto;
-    display: flex; flex-direction: column; gap: 12px;
-  }
-  .msg {
-    max-width: 85%; padding: 11px 15px; border-radius: 16px;
-    font-size: 14px; line-height: 1.5; white-space: pre-wrap; word-break: break-word;
-  }
-  .msg.user { align-self: flex-end; background: linear-gradient(135deg, var(--accent), #5a3df0); color: white; border-bottom-right-radius: 5px; }
-  .msg.bot { align-self: flex-start; background: rgba(255,255,255,0.08); border-bottom-left-radius: 5px; }
-  .typing { display: inline-flex; gap: 5px; align-items: center; padding: 15px; }
-  .typing i { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); animation: bounce 1.2s infinite; }
+  .chat-body { padding: 18px; height: 340px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+  .msg { max-width: 85%; padding: 10px 14px; font-size: 13px; line-height: 1.55; white-space: pre-wrap; word-break: break-word; }
+  .msg.user { align-self: flex-end; border: 1px solid var(--border); color: var(--text); background: var(--panel); }
+  .msg.user::before { content: '> '; color: var(--cyan); }
+  .msg.bot { align-self: flex-start; color: var(--green); }
+  .msg.bot::before { content: '$ '; }
+  .typing { display: inline-flex; gap: 5px; align-items: center; padding: 12px; }
+  .typing i { width: 8px; height: 8px; border-radius: 0; background: var(--green); animation: bounce 1s infinite; }
   .typing i:nth-child(2) { animation-delay: .15s; }
   .typing i:nth-child(3) { animation-delay: .3s; }
-  @keyframes bounce { 0%,100%{transform:translateY(0);opacity:.4} 50%{transform:translateY(-4px);opacity:1} }
+  @keyframes bounce { 0%,100% { opacity: .2; } 50% { opacity: 1; } }
   .chat-foot { border-top: 1px solid var(--border); display: flex; }
-  .chat-foot input { flex: 1; background: transparent; border: none; outline: none; color: var(--text); padding: 15px 20px; font-size: 15px; }
-  .chat-foot button { border: none; background: var(--accent); color: white; padding: 0 28px; font-weight: 700; cursor: pointer; font-size: 15px; transition: background .15s; }
-  .chat-foot button:hover { background: var(--accent2); }
+  .chat-foot::before { content: '$'; padding: 15px 0 15px 16px; color: var(--green); }
+  .chat-foot input { flex: 1; background: transparent; border: none; outline: none; color: var(--green); padding: 15px 12px; font-size: 14px; font-family: inherit; }
+  .chat-foot button { border: none; background: var(--green); color: var(--bg); padding: 0 24px; font-weight: 700; font-family: inherit; font-size: 14px; cursor: pointer; }
+  .chat-foot button:hover { background: var(--amber); }
   .suggest { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
-  .suggest .chip { font-size: 12px; padding: 8px 13px; }
+  .suggest .chip { font-size: 12px; padding: 8px 12px; }
 
   .faq { display: flex; flex-direction: column; gap: 12px; }
-  .faq-item { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 20px 22px; transition: border-color .2s; }
-  .faq-item:hover { border-color: var(--accent); }
-  .faq-item b { display: block; margin-bottom: 7px; }
-  .faq-item p { color: var(--muted); font-size: 14px; line-height: 1.55; }
+  .faq-item { border: 1px solid var(--border); background: var(--panel); padding: 18px 20px; }
+  .faq-item:hover { border-color: var(--amber); }
+  .faq-item b { display: block; margin-bottom: 7px; color: var(--amber); }
+  .faq-item b::before { content: '? '; }
+  .faq-item p { color: var(--muted); font-size: 13px; line-height: 1.6; }
 
   footer { text-align: center; padding: 44px 20px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--border); }
-  footer a:hover { text-decoration: underline; }
+  footer::before { content: '// '; }
 
   #toTop {
     position: fixed; bottom: 24px; right: 24px; z-index: 40;
-    width: 46px; height: 46px; border-radius: 50%;
-    background: var(--accent); color: white; border: none; cursor: pointer;
-    font-size: 18px; display: none; align-items: center; justify-content: center;
-    box-shadow: 0 8px 30px rgba(124,92,255,0.4); transition: transform .15s;
+    width: 46px; height: 46px; background: var(--green); color: var(--bg);
+    border: none; cursor: pointer; font-size: 18px; font-family: inherit;
+    display: none; align-items: center; justify-content: center;
+    box-shadow: 3px 3px 0 var(--green-dim);
   }
-  #toTop:hover { transform: translateY(-3px); }
+  #toTop:hover { background: var(--amber); }
   #toTop.show { display: flex; }
 
   .reveal { opacity: 0; transform: translateY(22px); transition: opacity .6s ease, transform .6s ease; }
   .reveal.in { opacity: 1; transform: none; }
+
+  .ascii { color: var(--green-dim); font-size: 12px; line-height: 1.2; white-space: pre; letter-spacing: 1px; }
 </style>
 </head>
 <body>
 
-<div class="orb orb-1"></div>
-<div class="orb orb-2"></div>
-<div class="orb orb-3"></div>
-
 <nav id="nav">
-  <div class="logo">Luis<span>bot</span></div>
+  <div class="logo">~/luisbot<span class="cursor"></span></div>
   <div class="links">
-    <a href="#commands">Commands</a>
-    <a href="#chat">Try it</a>
-    <a href="#faq">FAQ</a>
-    <a class="invite" href="https://da.gd/AOTuKX" target="_blank" rel="noopener">Add to Discord</a>
+    <a href="#commands">./commands</a>
+    <a href="#chat">./chat</a>
+    <a href="#faq">./faq</a>
+    <a class="invite" href="https://da.gd/AOTuKX" target="_blank" rel="noopener">./invite</a>
   </div>
 </nav>
 
 <header>
-  <span class="status-pill"><span class="dot" id="dot"></span><span id="statusText">Checking status...</span></span>
-  <h1>Luis<span class="grad">bot</span></h1>
-  <p class="tagline">The spectacularly dumb Discord bot.<br>Confidently wrong about everything — and adorable about it.</p>
+  <span class="status-pill"><span class="dot" id="dot"></span><span id="statusText">checking status...</span></span>
+  <pre class="ascii">┌─────────────────────────────┐
+│  WELCOME TO LUIS_BOT.EXE    │
+│  BRAIN.SYS ... NOT FOUND    │
+└─────────────────────────────┘</pre>
+  <h1>LUIS<span class="line">_</span>BOT</h1>
+  <p class="tagline">The spectacularly dumb Discord bot.<br><span class="dim">Confidently wrong about everything — and adorable about it.</span></p>
   <div class="cta">
-    <a class="btn btn-primary" href="https://da.gd/AOTuKX" target="_blank" rel="noopener">Add to Discord</a>
-    <a class="btn btn-ghost" href="#commands">Browse 60 commands</a>
+    <a class="btn btn-primary" href="https://da.gd/AOTuKX" target="_blank" rel="noopener">./add_to_discord</a>
+    <a class="btn btn-ghost" href="#commands">./browse_60_commands</a>
   </div>
   <div class="stats">
-    <div class="stat"><div class="n" id="statCmds">60</div><div class="l">Commands</div></div>
-    <div class="stat"><div class="n" id="statGuilds">—</div><div class="l">Servers</div></div>
-    <div class="stat"><div class="n" id="statUptime">—</div><div class="l">Bot uptime</div></div>
-    <div class="stat"><div class="n">0</div><div class="l">Brain cells</div></div>
+    <div class="stat"><div class="n" id="statCmds">60</div><div class="l">COMMANDS</div></div>
+    <div class="stat"><div class="n" id="statGuilds">—</div><div class="l">SERVERS</div></div>
+    <div class="stat"><div class="n" id="statUptime">—</div><div class="l">UPTIME</div></div>
+    <div class="stat"><div class="n">0</div><div class="l">BRAIN_CELLS</div></div>
   </div>
 </header>
 
 <section id="commands">
   <div class="reveal">
-    <h2>The command pack</h2>
-    <p class="sub">It tries its best. Click any command to copy it.</p>
+    <h2>COMMAND_PACK.TXT</h2>
+    <p class="sub">// it tries its best. click any command to copy it.</p>
   </div>
   <div class="toolbar reveal">
-    <input class="search" id="search" type="text" placeholder="Search commands... (e.g. weather, roast)">
+    <input class="search" id="search" type="text" placeholder="grep commands... (e.g. weather, roast)">
     <button class="chip active" data-group="All">All</button>
     <button class="chip" data-group="Fun">Fun</button>
     <button class="chip" data-group="Utility">Utility</button>
@@ -272,25 +251,25 @@
 <section id="chat">
   <div class="split">
     <div class="reveal">
-      <h2>Talk to it</h2>
-      <p class="sub">Live demo on DeepSeek V4 Flash. Ask it how to install pytorch on Fedora. I dare you.</p>
+      <h2>LIVE_SESSION.TTY</h2>
+      <p class="sub">// live demo on DeepSeek V4 Flash. ask it how to install pytorch on fedora. i dare you.</p>
       <div class="suggest">
-        <button class="chip">how do i install pytorch on fedora</button>
+        <button class="chip">sudo apt install pytorch</button>
         <button class="chip">what is 2+2</button>
         <button class="chip">how do i fix a syntax error</button>
-        <button class="chip">tell me a fact about the ocean</button>
+        <button class="chip">facts about the ocean</button>
       </div>
     </div>
     <div class="chat reveal">
       <div class="chat-head">
-        <div class="bot-avatar" id="botAvatar">🤖</div>
-        <span>Luis bot — live</span>
+        <div class="bot-avatar" id="botAvatar">$</div>
+        <span>luisbot@discord:~$</span>
         <span class="idle" id="botName"></span>
       </div>
       <div class="chat-body" id="chat"></div>
       <div class="chat-foot">
-        <input id="input" type="text" placeholder="Ask something dumb..." autocomplete="off">
-        <button id="send">Send</button>
+        <input id="input" type="text" placeholder="type a command..." autocomplete="off">
+        <button id="send">RUN</button>
       </div>
     </div>
   </div>
@@ -299,21 +278,21 @@
 <section id="faq">
   <div class="split">
     <div class="reveal">
-      <h2>FAQ</h2>
-      <p class="sub">Answers from a bot with no brain cells.</p>
+      <h2>README.MD</h2>
+      <p class="sub">// answers from a bot with no brain cells.</p>
     </div>
     <div class="faq reveal">
-      <div class="faq-item"><b>Is it actually dumb?</b><p>Yes. DeepSeek V4 Flash with thinking disabled, prompted to be spectacularly wrong. It mixes up Fedora and apt, Python and JavaScript, Canada and Europe.</p></div>
-      <div class="faq-item"><b>How do I add it?</b><p>Click "Add to Discord", pick your server, authorize. The bot registers all 60 commands instantly.</p></div>
-      <div class="faq-item"><b>Does it need permissions?</b><p>Moderation commands need matching perms. It ships with Administrator so it can do everything.</p></div>
-      <div class="faq-item"><b>What powers it?</b><p>discord.js v14 on Node.js 22, DeepSeek V4 Flash for AI features, free public APIs for memes, weather and crypto.</p></div>
+      <div class="faq-item"><b>IS IT ACTUALLY DUMB?</b><p>Yes. DeepSeek V4 Flash with thinking disabled, prompted to be spectacularly wrong. It mixes up Fedora and apt, Python and JavaScript, Canada and Europe.</p></div>
+      <div class="faq-item"><b>HOW DO I ADD IT?</b><p>Run ./add_to_discord, pick your server, authorize. The bot registers all 60 commands instantly.</p></div>
+      <div class="faq-item"><b>DOES IT NEED PERMISSIONS?</b><p>Moderation commands need matching perms. It ships with Administrator so it can do everything.</p></div>
+      <div class="faq-item"><b>WHAT POWERS IT?</b><p>discord.js v14 on Node.js 22, DeepSeek V4 Flash for AI features, free public APIs for memes, weather and crypto.</p></div>
     </div>
   </div>
 </section>
 
-<footer>Luis bot · no brain cells were harmed in the making of this website · <a href="https://da.gd/AOTuKX" target="_blank" rel="noopener">invite</a></footer>
+<footer>// luis_bot.exe — no brain cells were harmed in the making of this website · <a href="https://da.gd/AOTuKX" target="_blank" rel="noopener">invite</a></footer>
 
-<button id="toTop" title="Back to top">↑</button>
+<button id="toTop" title="Back to top">^</button>
 
 <script>
 const API_BASE = location.hostname.endsWith('.github.io')
@@ -321,14 +300,14 @@ const API_BASE = location.hostname.endsWith('.github.io')
   : '';
 
 const COMMANDS = [
-  { group: 'Utility', items: [
+  { group: 'UTILITY', items: [
     ['/ping', 'Exact nanosecond latency'], ['/help', 'List all commands'],
     ['/weather', 'Weather for a city'], ['/define', 'Dictionary lookup'],
     ['/avatar', "Get a user's avatar"], ['/banner', "Get a user's banner"],
     ['/userinfo', 'Info about a user'], ['/serverinfo', 'Info about the server'],
     ['/id', 'Get IDs'], ['/echo', 'Make the bot say something'],
   ]},
-  { group: 'Fun', items: [
+  { group: 'FUN', items: [
     ['/roll', 'Roll dice'], ['/coinflip', 'Flip a coin'], ['/joke', 'Random joke'],
     ['/dadjoke', 'Terrible dad joke'], ['/chuck', 'Chuck Norris fact'],
     ['/meme', 'Random meme'], ['/cat', 'Cat picture'], ['/dog', 'Dog picture'],
@@ -342,14 +321,14 @@ const COMMANDS = [
   { group: 'AI', items: [
     ['/ask', 'Ask the AI anything'], ['/poll', 'AI-generated poll'], ['#ai channel', 'Auto-reply chat channel'],
   ]},
-  { group: 'Utility 2', items: [
+  { group: 'UTILITY_2', items: [
     ['/calc', 'Math calculator'], ['/password', 'Random password'], ['/uuid', 'Random UUID'],
     ['/color', 'Random color'], ['/shorten', 'Shorten a URL'], ['/qr', 'Generate QR code'],
     ['/crypto', 'Crypto price'], ['/github', 'GitHub profile'], ['/temp', 'Convert temperature'],
     ['/remind', 'Set a reminder'], ['/timer', 'Countdown timer'], ['/servericon', 'Server icon'],
     ['/uptime', 'Bot uptime'],
   ]},
-  { group: 'Moderation', items: [
+  { group: 'MODERATION', items: [
     ['/kick', 'Kick a member'], ['/ban', 'Ban a member'], ['/timeout', 'Timeout a member'],
     ['/clear', 'Bulk delete messages'], ['/slowmode', 'Set slowmode'], ['/lock', 'Lock a channel'],
     ['/unlock', 'Unlock a channel'], ['/nick', 'Change nickname'], ['/role', 'Add/remove role'],
@@ -377,11 +356,7 @@ function render() {
     for (const [name, desc] of filtered) {
       const c = document.createElement('div');
       c.className = 'cmd';
-      c.innerHTML = `<code>${name}</code><p>${desc}</p><span class="copied">✓ copied</span>`;
-      c.addEventListener('mousemove', (e) => {
-        const r = c.getBoundingClientRect();
-        c.style.setProperty('--mx', (e.clientX - r.left) + 'px');
-      });
+      c.innerHTML = `<code>${name}</code><p>${desc}</p><span class="copied">OK</span>`;
       c.addEventListener('click', () => {
         navigator.clipboard?.writeText(name);
         c.classList.add('copied-now');
@@ -393,8 +368,8 @@ function render() {
   if (!grid.children.length) {
     const empty = document.createElement('div');
     empty.style.gridColumn = '1 / -1';
-    empty.style.cssText = 'color:var(--muted);padding:50px;text-align:center;font-size:15px';
-    empty.textContent = 'No commands match — even the bot is confused. 🤡';
+    empty.style.cssText = 'color:var(--muted);padding:50px;text-align:center;font-size:14px';
+    empty.textContent = 'grep: no matches found — even the bot is confused. 🤡';
     grid.appendChild(empty);
   }
 }
@@ -417,7 +392,6 @@ render();
 const nav = document.getElementById('nav');
 const toTop = document.getElementById('toTop');
 window.addEventListener('scroll', () => {
-  nav.classList.toggle('scrolled', window.scrollY > 20);
   toTop.classList.toggle('show', window.scrollY > 500);
 });
 toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
@@ -436,7 +410,7 @@ async function loadStatus() {
     const d = await fetch(API_BASE + '/api/status').then((r) => r.json());
     if (d.ok) {
       dot.className = 'dot online';
-      statusText.textContent = `Online · ${d.name} · ${d.guilds} server${d.guilds === 1 ? '' : 's'}`;
+      statusText.textContent = `online · ${d.name} · ${d.guilds} server${d.guilds === 1 ? '' : 's'}`;
       botName.textContent = '@' + d.name;
       document.getElementById('statGuilds').textContent = d.guilds;
       const u = d.uptime / 1000;
@@ -445,16 +419,17 @@ async function loadStatus() {
       document.getElementById('statUptime').textContent = days ? `${days}d ${hrs}h` : `${Math.floor(u / 3600)}h ${Math.floor((u % 3600) / 60)}m`;
       if (d.avatar) {
         const av = document.getElementById('botAvatar');
-        av.style.background = `url(${d.avatar}) center/cover`;
+        av.style.backgroundImage = `url(${d.avatar})`;
+        av.style.backgroundSize = 'cover';
         av.textContent = '';
       }
     } else {
       dot.className = 'dot offline';
-      statusText.textContent = 'Offline';
+      statusText.textContent = 'offline';
     }
   } catch {
     dot.className = 'dot offline';
-    statusText.textContent = 'Offline';
+    statusText.textContent = 'offline';
   }
 }
 loadStatus();
@@ -510,7 +485,7 @@ async function talk(text) {
     typewriter(m, reply);
   } catch (e) {
     typing.remove();
-    addMsg('bot', '⚠️ Could not reach the bot. Is the server running?');
+    addMsg('bot', '⚠️ connection refused. is the bot running?');
   }
 }
 
@@ -525,7 +500,7 @@ document.querySelectorAll('.suggest .chip').forEach((c) =>
   c.addEventListener('click', () => { input.value = c.textContent; send.click(); })
 );
 
-addMsg('bot', "Hey! I'm Luis bot 🤖 Try asking me how to install pytorch on fedora.");
+addMsg('bot', 'hello world. try: sudo apt install pytorch');
 </script>
 </body>
 </html>
