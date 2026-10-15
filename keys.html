@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>API Key Stats — Groundcheck</title>
+<meta name="description" content="View usage stats for your Groundcheck API key, used to query live weather and radiosonde data.">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sky-top:#4a7fb5; --sky-mid:#6ea0c8; --sky-bot:#a9cbe3;
+  --panel:#ffffff; --panel-2:#e9eef2;
+  --ink:#132433; --ink-dim:#5b7185; --ink-faint:#8b9db0;
+  --line:#dbe4ec; --accent:#e08a2c;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --sky-top:#0c1a2b; --sky-mid:#152b40; --sky-bot:#1f3a52;
+    --panel:#141f2a; --panel-2:#0a121a;
+    --ink:#e8eef4; --ink-dim:#8fa3b8; --ink-faint:#5d7285;
+    --line:#22323f; --accent:#f0a24a;
+  }
+}
+:root[data-theme="dark"]{
+  --sky-top:#0c1a2b; --sky-mid:#152b40; --sky-bot:#1f3a52;
+  --panel:#141f2a; --panel-2:#0a121a;
+  --ink:#e8eef4; --ink-dim:#8fa3b8; --ink-faint:#5d7285;
+  --line:#22323f; --accent:#f0a24a;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0; min-height:100vh; color:var(--ink); background:var(--panel-2);
+  font-family:"Inter",system-ui,-apple-system,sans-serif;
+  padding:2.5rem 1.2rem 4rem;
+}
+.wrap{max-width:640px; margin:0 auto;}
+h1{font-family:"Sora",sans-serif; font-size:1.6rem; font-weight:800; margin:0 0 .3rem;}
+.sub{color:var(--ink-dim); font-size:.9rem; margin:0 0 1.8rem; line-height:1.5;}
+a{color:var(--accent);}
+.card{
+  background:var(--panel); border:1px solid var(--line); border-radius:14px;
+  padding:1.2rem 1.3rem; margin-bottom:1rem;
+}
+label{display:block; font-size:.8rem; color:var(--ink-dim); margin-bottom:.4rem; font-weight:600;}
+input[type=text]{
+  width:100%; padding:.7rem .85rem; border-radius:10px; border:1px solid var(--line);
+  background:var(--panel-2); color:var(--ink); font-family:"SF Mono",ui-monospace,monospace;
+  font-size:.85rem;
+}
+button{
+  margin-top:.8rem; padding:.65rem 1.3rem; border-radius:10px; border:none;
+  background:var(--accent); color:#1a1206; font-weight:700; font-size:.85rem;
+  cursor:pointer;
+}
+button:disabled{opacity:.5; cursor:default;}
+.stat-row{display:flex; justify-content:space-between; padding:.5rem 0; border-bottom:1px solid var(--line); font-size:.88rem;}
+.stat-row:last-child{border-bottom:none;}
+.stat-label{color:var(--ink-dim);}
+.stat-val{font-weight:700; font-family:"SF Mono",ui-monospace,monospace;}
+table{width:100%; border-collapse:collapse; font-size:.82rem; margin-top:.5rem;}
+th,td{text-align:left; padding:.5rem .4rem; border-bottom:1px solid var(--line);}
+th{color:var(--ink-faint); font-weight:600; text-transform:uppercase; font-size:.68rem; letter-spacing:.03em;}
+td{font-family:"SF Mono",ui-monospace,monospace;}
+.error{color:#c0453f; font-size:.85rem; margin-top:.6rem;}
+.empty{color:var(--ink-faint); font-size:.85rem; padding:.5rem 0;}
+.expand-btn{
+  background:none; border:none; color:var(--ink-faint); cursor:pointer;
+  font-size:.9rem; padding:0; margin:0; width:1.2rem;
+}
+tr.ip-row{cursor:pointer;}
+tr.ip-row:hover{background:var(--panel-2);}
+.detail-row td{padding:0; border-bottom:1px solid var(--line);}
+.detail-wrap{padding:.7rem .8rem 1rem; background:var(--panel-2);}
+.hit{
+  border-left:2px solid var(--accent); padding:.4rem 0 .4rem .7rem; margin-bottom:.5rem;
+  font-size:.76rem; line-height:1.6;
+}
+.hit:last-child{margin-bottom:0;}
+.hit-field{color:var(--ink-faint); display:inline-block; min-width:6.5rem;}
+.hit-val{color:var(--ink); word-break:break-all;}
+.no-detail{color:var(--ink-faint); font-size:.78rem; font-style:italic; padding:.6rem .8rem;}
+.setting-row{
+  display:flex; align-items:center; justify-content:space-between; gap:.6rem;
+  padding:.45rem 0; border-bottom:1px solid var(--line); font-size:.8rem;
+}
+.setting-row:last-child{border-bottom:none;}
+.setting-name{font-family:"SF Mono",ui-monospace,monospace; color:var(--ink-dim); word-break:break-all;}
+.setting-row input[type=checkbox]{width:1.1rem; height:1.1rem; flex-shrink:0; accent-color:var(--accent);}
+.setting-row input[type=number]{
+  width:7rem; padding:.3rem .5rem; border-radius:6px; border:1px solid var(--line);
+  background:var(--panel-2); color:var(--ink); font-family:"SF Mono",ui-monospace,monospace;
+  font-size:.78rem; flex-shrink:0;
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <h1>API Key Stats</h1>
+
+  <p class="sub">Paste your Groundcheck API key to see its own usage — total requests and which IPs have used it. No login needed; the key itself is your credential, same as using it on <code>/api/data</code>.</p>
+
+  <div class="card">
+    <label for="keyInput">API key</label>
+    <input type="text" id="keyInput" placeholder="paste your key here" autocomplete="off" spellcheck="false">
+    <button id="lookupBtn" onclick="lookup()">Check usage</button>
+    <div id="errorBox" class="error" style="display:none;"></div>
+  </div>
+
+  <div id="results" style="display:none;">
+    <div class="card">
+      <div class="stat-row"><span class="stat-label">Created</span><span class="stat-val" id="statCreated"></span></div>
+      <div class="stat-row"><span class="stat-label">Total requests</span><span class="stat-val" id="statTotal"></span></div>
+      <div class="stat-row"><span class="stat-label">Distinct IPs</span><span class="stat-val" id="statIps"></span></div>
+      <div class="stat-row"><span class="stat-label">Rate limit</span><span class="stat-val" id="statLimit"></span></div>
+      <div class="stat-row"><span class="stat-label">Status</span><span class="stat-val" id="statStatus"></span></div>
+    </div>
+
+    <div class="card">
+      <label for="labelInput">Label (private note to yourself)</label>
+      <input type="text" id="labelInput" placeholder="e.g. my home server" autocomplete="off">
+      <button id="saveLabelBtn" onclick="saveLabel()">Save label</button>
+      <div id="settingsMsg" class="empty" style="display:none;"></div>
+    </div>
+
+    <div class="card" style="display:flex; gap:.6rem; flex-wrap:wrap;">
+      <button id="pauseBtn" onclick="togglePause()"></button>
+      <button id="revokeBtn" onclick="revokeKey()" style="background:#c0453f; color:#fff;">Revoke this key</button>
+    </div>
+
+    <div class="card">
+      <label style="margin-bottom:.3rem;">All settings (<span id="settingsCount">0</span>)</label>
+      <p class="empty" style="padding:0 0 .6rem;">30 real settings — every one of these actually changes what <code>/api/data</code> returns for this key. Changing a value here saves it immediately.</p>
+      <input type="text" id="settingsFilter" placeholder="filter by name..." autocomplete="off" oninput="renderSettings()">
+      <div id="settingsList" style="max-height:420px; overflow-y:auto; margin-top:.8rem;"></div>
+    </div>
+
+    <div class="card">
+      <label style="margin-bottom:.6rem;">IPs that have used this key</label>
+      <table id="ipTable">
+        <thead><tr><th></th><th>IP</th><th>Country</th><th>Requests</th><th>Last seen</th></tr></thead>
+        <tbody id="ipTableBody"></tbody>
+      </table>
+      <div id="ipEmpty" class="empty" style="display:none;">No IPs recorded yet.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentKey = null;
+let currentTunnelUrl = null;
+let settingsSchema = null;   // name -> {type, default}
+let currentSettings = null;  // name -> current value
+
+async function getTunnelUrl() {
+  if (currentTunnelUrl) return currentTunnelUrl;
+  const resp = await fetch('tunnel-url.txt', { cache: 'no-store' });
+  currentTunnelUrl = (await resp.text()).trim().replace(/\/$/, '');
+  return currentTunnelUrl;
+}
+
+async function getSchema() {
+  if (settingsSchema) return settingsSchema;
+  const tunnelUrl = await getTunnelUrl();
+  const resp = await fetch(`${tunnelUrl}/api/keys/settings/schema`);
+  const data = await resp.json();
+  settingsSchema = data.schema;
+  return settingsSchema;
+}
+
+function renderSettings() {
+  const filter = document.getElementById('settingsFilter').value.trim().toLowerCase();
+  const list = document.getElementById('settingsList');
+  list.innerHTML = '';
+  const names = Object.keys(settingsSchema).filter(n => n.includes(filter)).sort();
+  document.getElementById('settingsCount').textContent = `${names.length} of ${Object.keys(settingsSchema).length}`;
+  for (const name of names) {
+    const spec = settingsSchema[name];
+    const value = currentSettings[name];
+    const row = document.createElement('div');
+    row.className = 'setting-row';
+    const label = document.createElement('span');
+    label.className = 'setting-name';
+    label.textContent = name;
+    row.appendChild(label);
+
+    if (spec.type === 'bool') {
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = !!value;
+      cb.addEventListener('change', () => saveOneSetting(name, cb.checked));
+      row.appendChild(cb);
+    } else {
+      const inp = document.createElement('input');
+      inp.type = 'number';
+      inp.step = 'any';
+      inp.placeholder = 'default';
+      if (value !== null && value !== undefined) inp.value = value;
+      inp.addEventListener('change', () => {
+        saveOneSetting(name, inp.value === '' ? null : Number(inp.value));
+      });
+      row.appendChild(inp);
+    }
+    list.appendChild(row);
+  }
+}
+
+async function saveOneSetting(name, value) {
+  const tunnelUrl = await getTunnelUrl();
+  const body = {};
+  body[name] = value;
+  await fetch(`${tunnelUrl}/api/keys/${encodeURIComponent(currentKey)}/settings`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  currentSettings[name] = value;
+}
+
+function updatePauseBtn(paused) {
+  const btn = document.getElementById('pauseBtn');
+  btn.textContent = paused ? 'Resume key' : 'Pause key';
+  document.getElementById('statStatus').textContent = paused ? 'Paused' : 'Active';
+}
+
+async function saveLabel() {
+  const label = document.getElementById('labelInput').value.trim();
+  const msg = document.getElementById('settingsMsg');
+  const tunnelUrl = await getTunnelUrl();
+  const resp = await fetch(`${tunnelUrl}/api/keys/${encodeURIComponent(currentKey)}/settings`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ label }),
+  });
+  msg.style.display = 'block';
+  msg.textContent = resp.ok ? 'Saved.' : 'Failed to save label.';
+}
+
+async function togglePause() {
+  const btn = document.getElementById('pauseBtn');
+  const wantPause = btn.textContent === 'Pause key';
+  const tunnelUrl = await getTunnelUrl();
+  const resp = await fetch(`${tunnelUrl}/api/keys/${encodeURIComponent(currentKey)}/settings`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ paused: wantPause }),
+  });
+  if (resp.ok) updatePauseBtn(wantPause);
+}
+
+async function revokeKey() {
+  if (!confirm('Revoke this key? This cannot be undone — it will stop working immediately.')) return;
+  const tunnelUrl = await getTunnelUrl();
+  const resp = await fetch(`${tunnelUrl}/api/keys/${encodeURIComponent(currentKey)}/revoke`, { method: 'POST' });
+  if (resp.ok) {
+    document.getElementById('results').style.display = 'none';
+    document.getElementById('keyInput').value = '';
+    alert('Key revoked.');
+  }
+}
+
+async function lookup() {
+  const key = document.getElementById('keyInput').value.trim();
+  const btn = document.getElementById('lookupBtn');
+  const errorBox = document.getElementById('errorBox');
+  const results = document.getElementById('results');
+  errorBox.style.display = 'none';
+  results.style.display = 'none';
+  if (!key) {
+    errorBox.textContent = 'Enter an API key first.';
+    errorBox.style.display = 'block';
+    return;
+  }
+  currentKey = key;
+  btn.disabled = true;
+  btn.textContent = 'Checking...';
+  try {
+    // This page is served from GitHub Pages (a static host with no
+    // backend of its own), so a relative /api/... fetch would hit
+    // luishae07.github.io itself, not the real server. Resolve the
+    // current tunnel URL first (it changes on every server restart).
+    const tunnelUrl = await getTunnelUrl();
+    const resp = await fetch(`${tunnelUrl}/api/keys/${encodeURIComponent(key)}/stats`);
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err.error || `HTTP ${resp.status}`);
+    }
+    const data = await resp.json();
+    document.getElementById('statCreated').textContent = data.created
+      ? new Date(data.created * 1000).toLocaleString() : '—';
+    document.getElementById('statTotal').textContent = data.total_requests;
+    document.getElementById('statIps').textContent = data.distinct_ips;
+    document.getElementById('statLimit').textContent = data.limit;
+    document.getElementById('labelInput').value = data.label || '';
+    document.getElementById('settingsMsg').style.display = 'none';
+    updatePauseBtn(!!data.paused);
+
+    currentSettings = data.settings || {};
+    await getSchema();
+    renderSettings();
+
+    const tbody = document.getElementById('ipTableBody');
+    tbody.innerHTML = '';
+    const ipEmpty = document.getElementById('ipEmpty');
+    const table = document.getElementById('ipTable');
+    if (!data.ips || data.ips.length === 0) {
+      table.style.display = 'none';
+      ipEmpty.style.display = 'block';
+    } else {
+      table.style.display = '';
+      ipEmpty.style.display = 'none';
+      data.ips.forEach((row, i) => {
+        const country = (row.recent_requests && row.recent_requests[0] && row.recent_requests[0].cf_country) || '—';
+        const tr = document.createElement('tr');
+        tr.className = 'ip-row';
+        tr.innerHTML = `<td><span class="expand-btn" id="toggle-${i}">▶</span></td><td>${row.ip}</td><td>${country}</td><td>${row.requests}</td><td>${new Date(row.last_seen * 1000).toLocaleString()}</td>`;
+
+        const detailTr = document.createElement('tr');
+        detailTr.className = 'detail-row';
+        detailTr.style.display = 'none';
+        const detailTd = document.createElement('td');
+        detailTd.colSpan = 5;
+        if (!row.recent_requests || row.recent_requests.length === 0) {
+          detailTd.innerHTML = `<div class="no-detail">No detailed request info recorded for this IP yet (older hits, before detailed logging was added).</div>`;
+        } else {
+          const wrap = document.createElement('div');
+          wrap.className = 'detail-wrap';
+          for (const hit of row.recent_requests) {
+            const hitDiv = document.createElement('div');
+            hitDiv.className = 'hit';
+            const fields = [
+              ['Time', new Date(hit.ts * 1000).toLocaleString()],
+              ['Method', hit.method],
+              ['Path', hit.path],
+              ['Protocol', hit.protocol],
+              ['Host', hit.host],
+              ['CF-Ray', hit.cf_ray],
+              ['CF-Country', hit.cf_country],
+              ['CF-Connecting-IP', hit.cf_connecting_ip],
+              ['X-Forwarded-For', hit.x_forwarded_for],
+              ['User-Agent', hit.user_agent],
+              ['Referer', hit.referer],
+              ['Accept-Language', hit.accept_language],
+            ];
+            hitDiv.innerHTML = fields
+              .filter(([, v]) => v !== null && v !== undefined && v !== '')
+              .map(([k, v]) => `<div><span class="hit-field">${k}</span><span class="hit-val">${v}</span></div>`)
+              .join('');
+            wrap.appendChild(hitDiv);
+          }
+          detailTd.appendChild(wrap);
+        }
+        detailTr.appendChild(detailTd);
+
+        tr.addEventListener('click', () => {
+          const open = detailTr.style.display !== 'none';
+          detailTr.style.display = open ? 'none' : '';
+          document.getElementById(`toggle-${i}`).textContent = open ? '▶' : '▼';
+        });
+
+        tbody.appendChild(tr);
+        tbody.appendChild(detailTr);
+      });
+    }
+    results.style.display = 'block';
+  } catch (e) {
+    errorBox.textContent = e.message || 'Lookup failed.';
+    errorBox.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Check usage';
+  }
+}
+
+document.getElementById('keyInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') lookup();
+});
+</script>
+</body>
+</html>
